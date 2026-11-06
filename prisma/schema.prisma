@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EstadoComentario {
+  PENDIENTE
+  APROBADO
+  RECHAZADO
+}
+
+model Comentario {
+  id        String           @id @default(uuid())
+  nombre    String           @db.VarChar(60)
+  texto     String           @db.VarChar(500)
+  estado    EstadoComentario @default(PENDIENTE)
+  caso      String?
+  ipHash    String?          @db.VarChar(64)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([estado, createdAt])
+  @@index([ipHash, createdAt])
+}
+
+model Admin {
+  id                  String   @id @default(uuid())
+  usuario             String   @unique
+  email               String?
+  passwordHash        String
+  debeCambiarPassword Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
