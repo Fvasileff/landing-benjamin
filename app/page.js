@@ -80,24 +80,29 @@ const JSON_LD = {
 };
 
 async function obtenerTestimonios() {
-  const comentarios = await prisma.comentario.findMany({
-    where: { estado: 'APROBADO' },
-    orderBy: { createdAt: 'desc' },
-    take: 12,
-    select: {
-      id: true,
-      nombre: true,
-      texto: true,
-      caso: true,
-    },
-  });
+  try {
+    const comentarios = await prisma.comentario.findMany({
+      where: { estado: 'APROBADO' },
+      orderBy: { createdAt: 'desc' },
+      take: 12,
+      select: {
+        id: true,
+        nombre: true,
+        texto: true,
+        caso: true,
+      },
+    });
 
-  return comentarios.map((comentario) => ({
-    id: comentario.id,
-    autor: comentario.nombre,
-    texto: comentario.texto,
-    caso: comentario.caso,
-  }));
+    return comentarios.map((comentario) => ({
+      id: comentario.id,
+      autor: comentario.nombre,
+      texto: comentario.texto,
+      caso: comentario.caso,
+    }));
+  } catch (dbError) {
+    console.error('No se pudieron cargar los testimonios:', dbError);
+    return [];
+  }
 }
 
 export default async function Page() {
